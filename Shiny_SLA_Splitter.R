@@ -4,12 +4,13 @@ library("openxlsx")
 library("readxl")
 library("stringr")
 
-
+version_no <- "Version 1.0"
 options(shiny.maxRequestSize=500*1024^2)
 
   # minimal Shiny UI
 ui <- fluidPage(
   titlePanel("SLA splitter"),
+  textOutput("version"),
   tags$br(),
 
   fileInput("slafile", "Choose SLA File",
@@ -36,7 +37,7 @@ ui <- fluidPage(
 # minimal Shiny server
 server <- function(input, output) {
 
-
+  output$version <- renderText(version_no)
   output$okBtn <- downloadHandler(
     filename = function() {
       ifelse(str_ends(input$outputfile,'xlsx'),input$outputfile,paste0(input$outputfile,'.xlsx'))
