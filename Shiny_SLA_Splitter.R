@@ -1,5 +1,8 @@
 #https://www.r-bloggers.com/2019/07/excel-report-generation-with-shiny/
 library("ERICDataProc")
+library("openxlsx")
+library("readxl")
+library("stringr")
 
 
 options(shiny.maxRequestSize=500*1024^2)
@@ -60,6 +63,7 @@ server <- function(input, output) {
       if (is.null(inFile))
         return(NULL)
 
+
       #Assume only a single sheet
       SLA_data <- read_excel(inFile$datapath,sheet = 1, col_names = TRUE,col_types = "text")
 
@@ -74,12 +78,13 @@ server <- function(input, output) {
       writeData(XL_wb,sourceSheet,SLA_data)
 
       #Remove vague grid refs
-      SLA_data<- filter(SLA_data,as.numeric(SLA_data$Precision)<10000)
+      SLA_data<- dplyr::filter(SLA_data,as.numeric(SLA_data$Precision)<10000)
 
       #All data gets added to the All data sheet too
       if (allDataSheet != "") {
         addWorksheet(XL_wb,allDataSheet)
       }
+
 
       split_data_to_sheets(SLA_split,XL_wb,SLA_data,allDataSheet,outputCols)
 
