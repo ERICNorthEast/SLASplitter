@@ -4,8 +4,9 @@ library("openxlsx")
 library("readxl")
 library("stringr")
 
-version_no <- "Version 1.0"
-options(shiny.maxRequestSize=500*1024^2)
+version_no <- "Version 0.1"
+options(shiny.maxRequestSize=1000000*1024^2)
+
 
   # minimal Shiny UI
 ui <- fluidPage(
@@ -13,7 +14,7 @@ ui <- fluidPage(
   textOutput("version"),
   tags$br(),
 
-  fileInput("slafile", "Choose SLA File",
+  fileInput("slafile", "Choose SLA File (.XLSX)",
             accept = c(
               "application/vnd.ms-excel",
               "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -73,7 +74,7 @@ server <- function(input, output) {
       SLA_data$'Obs Changed Date' <- formatDates(SLA_data$'Obs Changed Date')
       SLA_data$`Obs Entry Date` <- formatDates(SLA_data$`Obs Entry Date`)
 
-      #Output the data
+      #Output the data to the source sheet
       XL_wb <- createWorkbook()
       addWorksheet(XL_wb,sourceSheet)
       writeData(XL_wb,sourceSheet,SLA_data)
@@ -86,7 +87,7 @@ server <- function(input, output) {
         addWorksheet(XL_wb,allDataSheet)
       }
 
-
+      # Create appropriate worksheets depending on the config for the LA
       split_data_to_sheets(SLA_split,XL_wb,SLA_data,allDataSheet,outputCols)
 
 
